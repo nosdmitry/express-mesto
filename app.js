@@ -4,14 +4,12 @@ const { routes } = require('./routes');
 
 const {
   PORT = 3000,
-  MONGODB__URL = 'mongodb://localhost:27017/mestodb',
+  MONGO_URL = 'mongodb://localhost:27017/mestodb',
 } = process.env;
 
 const app = express();
 
 app.use(express.json());
-
-app.use(routes);
 
 app.use((req, res, next) => {
   req.user = {
@@ -20,8 +18,21 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(routes);
+
+// mongoose.connect(MONGO_URL, {
+//   useNewUrlParser: true,
+//   useCreateIndex: true,
+//   useFindAndModify: false,
+//   useUnifiedTopology: true,
+// });
+
+// app.listen(PORT, () => {
+//   console.log(`Listening on port ${PORT}`);
+// });
+
 async function main() {
-  await mongoose.connect(MONGODB__URL, {
+  await mongoose.connect(MONGO_URL, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,
