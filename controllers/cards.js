@@ -11,8 +11,8 @@ module.exports.getAllCards = async(req, res) => {
 
 module.exports.createCard = async(req, res) => {
   try {
-    res.send(req.user._id);
-    console.log();
+    const card = await Cards({ ...req.body, owner: req.user._id });
+    res.status(200).send(await card.save());
   } catch (err) {
     console.log(err);
   }
@@ -20,7 +20,8 @@ module.exports.createCard = async(req, res) => {
 
 module.exports.deleteCard = async(req, res) => {
   try {
-    res.send(await req.params.cardId);
+    const card = await Cards.findByIdAndDelete(req.params.cardId);
+    res.status(200).send(card);
   } catch (err) {
     await console.log(err);
   }
