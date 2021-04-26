@@ -27,7 +27,7 @@ async function main() {
     useFindAndModify: false,
     useUnifiedTopology: true,
   });
-  console.log('BD connected');
+  console.log('DB connected');
   await app.listen(PORT, () => {
     console.log(`App is listening on port ${PORT}`);
   });
