@@ -9,8 +9,6 @@ const {
 
 const app = express();
 
-app.use(express.json());
-
 app.use((req, res, next) => {
   req.user = {
     _id: '6084fd8c7ef7452941ce7275',
