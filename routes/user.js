@@ -13,6 +13,6 @@ userRoutes.post('/', createUser);
 
 userRoutes.patch('/me', updateUserProfile);
 
-userRoutes.patch('/me/avatar', updateUserAvatar);
+userRoutes.patch('/me/avatar', updateUserProfile);
 
 module.exports = userRoutes;

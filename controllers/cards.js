@@ -5,7 +5,7 @@ module.exports.getAllCards = async (req, res) => {
     const cards = await Cards.find({});
     res.send(await cards);
   } catch (err) {
-    await res.status(500).send('Ошибка при обработке карточек');
+    await res.status(500).send({ massage: 'Ошибка при обработке карточек' });
   }
 };
 

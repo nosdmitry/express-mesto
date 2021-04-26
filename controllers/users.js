@@ -1,47 +1,59 @@
 const { User } = require('../models/user');
 
-async function updateUserInfo(req, res) {
-  const user = await User.findByIdAndUpdate({ _id: req.user._id }, { ...req.body });
-  res.status(200).send(await user);
-}
-
-module.exports.getUsers = async(req, res) => {
+module.exports.getUsers = async (req, res) => {
   try {
     const users = await User.find({});
-    res.send(await users);
+    res.status(200).send(await users);
   } catch (err) {
-    res.status(500).send('Произошла ощибка при обращении к пользователям');
+    res.status(500).send({ message: 'Серверная ошибка.' });
   }
 };
 
-module.exports.getUsersById = async(req, res) => {
+module.exports.getUsersById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.userId);
-    res.send(await user);
+    const user = await User.findById(req.params.userId)
+      .orFail(new Error('NoValidId'));
+    res.status(200).send(await user);
   } catch (err) {
-    console.log(err);
-    res.status(400).send('Пользователь не найден');
+    if (err.message === 'NoValidId') {
+      res.status(404).send({ message: 'Пользователь по указанному _id не найден.' });
+    } else if (err.name === 'CastError') {
+      res.status(400).send({ message: 'Невалидный id' });
+    } else {
+      res.status(500).send({ message: 'Серверная ошибка.' });
+    }
   }
 };
 
-module.exports.createUser = async(req, res) => {
-  const user = new User(req.body);
-  res.send(await user.save());
-};
-
-module.exports.updateUserProfile = async(req, res) => {
+module.exports.createUser = async (req, res) => {
   try {
-    updateUserInfo(req, res);
+    const user = new User(req.body);
+    res.status(200).send(await user.save());
   } catch (err) {
-    res.send(await 'ошибка!');
-    res.send(await err);
+    if (err.name === 'ValidationError') {
+      res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+    } else {
+      res.status(500).send({ message: 'Серверная ошибка.' });
+    }
   }
 };
 
-module.exports.updateUserAvatar = async(req, res) => {
+module.exports.updateUserProfile = async (req, res) => {
   try {
-    updateUserInfo(req, res);
+    const user = User.findOneAndUpdate({
+      _id: req.user._id,
+    }, { ...req.body }, {
+      new: true, runValidators: true,
+    })
+      .orFail(new Error('NoValidId'));
+    res.status(200).send(await user);
   } catch (err) {
-    console.log(err);
+    if (err.name === 'ValidationError') {
+      res.status(400).send({ message: 'Переданы некорректные данные при обновлении пользователя.' });
+    } else if (err.name === 'NoValidId') {
+      res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
+    } else {
+      res.status(500).send({ message: 'Серверная ошибка.' });
+    }
   }
 };
