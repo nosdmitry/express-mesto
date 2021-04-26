@@ -1,5 +1,10 @@
 const { User } = require('../models/user');
 
+async function updateUserInfo(req, res) {
+  const user = await User.findByIdAndUpdate({ _id: req.user._id }, { ...req.body });
+  res.status(200).send(await user);
+}
+
 module.exports.getUsers = async(req, res) => {
   try {
     const users = await User.find({});
@@ -26,13 +31,17 @@ module.exports.createUser = async(req, res) => {
 
 module.exports.updateUserProfile = async(req, res) => {
   try {
-    const user = await User.findByIdAndUpdate({ _id: req.user._id }, { ...req.body });
-    res.status(200).send(await user);
-    // const user = await User.map((item) => {
-    //   if(item._id)
-    // });
+    updateUserInfo(req, res);
   } catch (err) {
     res.send(await 'ошибка!');
     res.send(await err);
+  }
+};
+
+module.exports.updateUserAvatar = async(req, res) => {
+  try {
+    updateUserInfo(req, res);
+  } catch (err) {
+    console.log(err);
   }
 };
