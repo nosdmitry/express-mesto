@@ -20,17 +20,6 @@ app.use((req, res, next) => {
 
 app.use(routes);
 
-// mongoose.connect(MONGO_URL, {
-//   useNewUrlParser: true,
-//   useCreateIndex: true,
-//   useFindAndModify: false,
-//   useUnifiedTopology: true,
-// });
-
-// app.listen(PORT, () => {
-//   console.log(`Listening on port ${PORT}`);
-// });
-
 async function main() {
   await mongoose.connect(MONGO_URL, {
     useNewUrlParser: true,

@@ -5,7 +5,7 @@ module.exports.getAllCards = async (req, res) => {
     const cards = await Cards.find({});
     res.send(await cards);
   } catch (err) {
-    await res.status(500).send({ massage: 'Ошибка при обработке карточек' });
+    res.status(500).send({ message: 'Серверная ошибка.' });
   }
 };
 
@@ -14,39 +14,64 @@ module.exports.createCard = async (req, res) => {
     const card = await Cards({ ...req.body, owner: req.user._id });
     res.status(200).send(await card.save());
   } catch (err) {
-    console.log(err);
+    if (err.name === 'ValidationError') {
+      res.status(400).send({ message: 'Переданы некорректные данные при создании карточки.' });
+    } else {
+      res.status(500).send({ message: 'Серверная ошибка.' });
+    }
   }
 };
 
 module.exports.deleteCard = async (req, res) => {
   try {
-    const card = await Cards.findByIdAndDelete(req.params.cardId);
+    const card = await Cards.findByIdAndDelete(req.params.cardId)
+      .orFail(new Error('NoValidId'));
     res.status(200).send(card);
   } catch (err) {
-    await console.log(err);
+    if (err.message === 'NoValidId') {
+      res.status(404).send({ message: 'Карточка с указанным _id не найдена.' });
+    } else {
+      res.status(500).send({ message: 'Серверная ошибка.' });
+    }
   }
 };
 
 module.exports.likeCard = async (req, res) => {
   try {
-    res.send(await Cards.findByIdAndUpdate(
+    const like = await Cards.findByIdAndUpdate(
       req.params.cardId,
-      { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+      { $addToSet: { likes: req.user._id } },
       { new: true },
-    ));
+    )
+      .orFail(new Error('NoValidId'));
+    res.status(200).send(like);
   } catch (err) {
-    await console.log(err);
+    if (err.name === 'CastError') {
+      res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
+    } else if (err.message === 'NoValidId') {
+      res.status(404).send({ message: 'Карточка не найдена.' });
+    } else {
+      res.status(500).send({ message: 'Серверная ошибка.' });
+    }
   }
 };
 
 module.exports.dislikeCard = async (req, res) => {
   try {
-    res.send(await Cards.findByIdAndUpdate(
+    const dislike = await Cards.findByIdAndUpdate(
       req.params.cardId,
-      { $pull: { likes: req.user._id } }, // убрать _id из массива
+      { $pull: { likes: req.user._id } },
       { new: true },
-    ));
+    )
+      .orFail(new Error('NoValidId'));
+    res.status(200).send(dislike);
   } catch (err) {
-    await console.log(err);
+    if (err.name === 'CastError') {
+      res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
+    } else if (err.message === 'NoValidId') {
+      res.status(404).send({ message: 'Карточка не найдена.' });
+    } else {
+      res.status(500).send({ message: 'Серверная ошибка.' });
+    }
   }
 };
