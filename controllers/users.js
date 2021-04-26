@@ -23,3 +23,16 @@ module.exports.createUser = async(req, res) => {
   const user = new User(req.body);
   res.send(await user.save());
 };
+
+module.exports.updateUserProfile = async(req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate({ _id: req.user._id }, { ...req.body });
+    res.status(200).send(await user);
+    // const user = await User.map((item) => {
+    //   if(item._id)
+    // });
+  } catch (err) {
+    res.send(await 'ошибка!');
+    res.send(await err);
+  }
+};
