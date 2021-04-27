@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 const { routes } = require('./routes');
 
 const {
@@ -8,6 +9,10 @@ const {
 } = process.env;
 
 const app = express();
+
+app.use(helmet());
+
+app.disable('x-powered-by');
 
 app.use((req, res, next) => {
   req.user = {
