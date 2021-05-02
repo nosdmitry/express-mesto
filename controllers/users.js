@@ -1,9 +1,11 @@
 const validator = require('validator');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { User } = require('../models/user');
 
 const UNIQUE_EMAIL_ERROR = 11000;
 const SOLT_ROUNDS = 10;
+const JWT_SECRET_PHRASE = 'wqdlm;sdlfjmowq;eif';
 
 module.exports.getUsers = async (req, res) => {
   try {
@@ -51,7 +53,7 @@ module.exports.createUser = async (req, res) => {
   return null;
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).send({ message: 'Не передан email или пароль.' });
@@ -59,7 +61,7 @@ module.exports.login = (req, res) => {
   if (!validator.isEmail(email)) {
     return res.status(400).send({ message: 'Некорректный email' });
   }
-  User.findOne({ email })
+  await User.findOne({ email })
     .then((user) => {
       if (!user) {
         return Promise.reject(new Error('Неправлиьный email или пароль.'));
@@ -69,7 +71,8 @@ module.exports.login = (req, res) => {
           if (!matched) {
             return Promise.reject(new Error('Неправлиьный email или пароль.'));
           }
-          return res.status(200).send({ message: 'Got it!' });
+          const token = jwt.sign({ _id: user._id }, JWT_SECRET_PHRASE, { expiresIn: '1w' });
+          return res.status(200).send({ message: token });
         })
         .catch((err) => res.status(401).send({ message: err.message }));
     })
