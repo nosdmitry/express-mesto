@@ -12,15 +12,15 @@ const {
 const app = express();
 
 app.use(helmet());
+app.use(cookieParser());
 app.disable('x-powered-by');
 app.use(express.json());
-app.use(cookieParser());
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6084fd8c7ef7452941ce7275',
-  };
-  next();
-});
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: '6084fd8c7ef7452941ce7275',
+//   };
+//   next();
+// });
 app.use(routes);
 
 async function main() {

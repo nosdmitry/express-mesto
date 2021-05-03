@@ -66,7 +66,7 @@ module.exports.login = async (req, res) => {
       if (!user) {
         return Promise.reject(new Error('Неправлиьный email или пароль.'));
       }
-      return bcrypt.compare(password, user.password)
+      bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
             return Promise.reject(new Error('Неправлиьный email или пароль.'));
@@ -80,13 +80,11 @@ module.exports.login = async (req, res) => {
             maxAge: 3600000 * 24 * 7,
             httpOnly: true,
             sameSite: true,
-          }).send({ _id: user._id });
-          // return res.status(200).send({ message: token });
+          }).status(200).send({ _id: user._id });
         })
         .catch((err) => res.status(401).send({ message: err.message }));
     })
     .catch((err) => res.status(401).send({ message: err.message }));
-  return null;
 };
 
 module.exports.updateUserProfile = async (req, res) => {
