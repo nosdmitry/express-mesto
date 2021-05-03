@@ -5,7 +5,7 @@ const { User } = require('../models/user');
 
 const UNIQUE_EMAIL_ERROR = 11000;
 const SOLT_ROUNDS = 10;
-const JWT_SECRET_PHRASE = 'wqdlm;sdlfjmowq;eif';
+const JWT_SECRET_PHRASE = 'ww3lm;sdAjmodS;ei72f';
 
 module.exports.getUsers = async (req, res) => {
   try {
@@ -71,8 +71,17 @@ module.exports.login = async (req, res) => {
           if (!matched) {
             return Promise.reject(new Error('Неправлиьный email или пароль.'));
           }
-          const token = jwt.sign({ _id: user._id }, JWT_SECRET_PHRASE, { expiresIn: '1w' });
-          return res.status(200).send({ message: token });
+          const token = jwt.sign(
+            { _id: user._id },
+            JWT_SECRET_PHRASE,
+            { expiresIn: 3600000 * 24 * 7 },
+          );
+          res.cookie('userToken', token, {
+            maxAge: 3600000 * 24 * 7,
+            httpOnly: true,
+            sameSite: true,
+          }).send({ _id: user._id });
+          // return res.status(200).send({ message: token });
         })
         .catch((err) => res.status(401).send({ message: err.message }));
     })

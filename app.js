@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 const { routes } = require('./routes');
 
 const {
@@ -13,6 +14,7 @@ const app = express();
 app.use(helmet());
 app.disable('x-powered-by');
 app.use(express.json());
+app.use(cookieParser());
 app.use((req, res, next) => {
   req.user = {
     _id: '6084fd8c7ef7452941ce7275',
