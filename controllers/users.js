@@ -32,6 +32,21 @@ module.exports.getUsersById = async (req, res) => {
   }
 };
 
+module.exports.getUserInfo = async (req, res) => {
+  try {
+    console.log(req.cookies.userToken);
+    const user = await User.findById(req.user._id)
+      .orFail(new Error('NoAuthorize'));
+    res.status(200).send(await user);
+  } catch (err) {
+    if (err.message === 'NoAuthorize') {
+      res.status(403).send({ message: 'Ошибка регистрации.' });
+    } else {
+      res.status(500).send({ message: 'Серверная ошибка.' });
+    }
+  }
+}
+
 module.exports.createUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -80,7 +95,7 @@ module.exports.login = async (req, res) => {
             maxAge: 3600000 * 24 * 7,
             httpOnly: true,
             sameSite: true,
-          }).status(200).send({ _id: user._id });
+          }).status(200).send({ message: 'Вход выполнен успешно.' });
         })
         .catch((err) => res.status(401).send({ message: err.message }));
     })
