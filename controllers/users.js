@@ -76,7 +76,7 @@ module.exports.login = async (req, res) => {
   if (!validator.isEmail(email)) {
     return res.status(400).send({ message: 'Некорректный email' });
   }
-  await User.findOne({ email })
+  await User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         return Promise.reject(new Error('Неправлиьный email или пароль.'));
