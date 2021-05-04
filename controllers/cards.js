@@ -26,9 +26,15 @@ module.exports.createCard = async (req, res) => {
 
 module.exports.deleteCard = async (req, res) => {
   try {
-    const card = await Cards.findByIdAndDelete(req.params.cardId)
+    const card = await Cards.findById(req.params.cardId)
       .orFail(new Error('NoValidId'));
-    res.status(200).send(card);
+    if (card.owner._id == req.user._id) {
+      card.deleteOne();
+      res.status(200).send({ message: 'Успешно удалено' });
+    } else {
+      res.status(403).send({ message: 'Можно удалять только свои катрочки.' });
+    }
+    
   } catch (err) {
     if (err.name === 'CastError') {
       res.status(400).send({ message: 'Переданы некорректные данные.' });

@@ -5,6 +5,7 @@ const JWT_SECRET_PHRASE = 'ww3lm;sdAjmodS;ei72f';
 module.exports = async (req, res, next) => {
   // const token = req.headers.authorization;
   const token = req.cookies.userToken;
+
   let payload;
   if (!token) {
     res.status(403).send({ message: 'Необхадима авторизация' });
