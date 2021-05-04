@@ -13,11 +13,10 @@ module.exports.getAllCards = async (req, res) => {
 module.exports.createCard = async (req, res) => {
   try {
     const card = await Cards({ ...req.body, owner: req.user._id })
-      .populate('')
     res.status(200).send(await card.save());
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({ message: 'Переданы некорректные данные при создании карточки.' });
+      res.status(400).send({ message: 'Введены некорректные данные.' });
     } else {
       res.status(500).send({ message: 'Серверная ошибка.' });
     }
@@ -34,7 +33,6 @@ module.exports.deleteCard = async (req, res) => {
     } else {
       res.status(403).send({ message: 'Можно удалять только свои катрочки.' });
     }
-    
   } catch (err) {
     if (err.name === 'CastError') {
       res.status(400).send({ message: 'Переданы некорректные данные.' });
