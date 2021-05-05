@@ -23,6 +23,15 @@ app.use(express.json());
 // });
 app.use(routes);
 
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({
+    message: statusCode === 5
+      ? 'На сервере произошла ошибка'
+      : message
+  });  
+});
+
 async function main() {
   try {
     await mongoose.connect(MONGO_URL, {

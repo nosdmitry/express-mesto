@@ -2,6 +2,7 @@ const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models/user');
+const NotFoundError = require('../errors/NotFoundError');
 
 const UNIQUE_EMAIL_ERROR = 11000;
 const SOLT_ROUNDS = 10;
@@ -16,19 +17,21 @@ module.exports.getUsers = async (req, res) => {
   }
 };
 
-module.exports.getUsersById = async (req, res) => {
+module.exports.getUsersById = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.userId)
-      .orFail(new Error('NoValidId'));
+    const user = await User.findById(req.params.userId);
+    if(!user) {
+      throw new NotFoundError('Пользователь по указанному _id не найден.');
+    }
     res.status(200).send(await user);
   } catch (err) {
-    if (err.message === 'NoValidId') {
-      res.status(404).send({ message: 'Пользователь по указанному _id не найден.' });
-    } else if (err.name === 'CastError') {
-      res.status(400).send({ message: 'Невалидный id' });
-    } else {
-      res.status(500).send({ message: 'Серверная ошибка.' });
-    }
+    next(err);
+
+  //   } else if (err.name === 'CastError') {
+  //     res.status(400).send({ message: 'Невалидный id' });
+  //   } 
+  // }
+
   }
 };
 
