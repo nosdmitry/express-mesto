@@ -6,6 +6,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const NotAuthorizedError = require('../errors/NotAuthorizedError');
 const NotCorrectDataError = require('../errors/NotCorrectDataError');
 const NotUniqDataError = require('../errors/NotUniqDataError');
+const NotCorrectPasswordError = require('../errors/NotCorrectPasswordError');
 
 const UNIQUE_EMAIL_ERROR = 11000;
 const SOLT_ROUNDS = 10;
@@ -76,12 +77,12 @@ module.exports.login = async (req, res, next) => {
     await User.findOne({ email }).select('+password')
       .then((user) => {
         if (!user) {
-          return Promise.reject(new NotAuthorizedError('Неправлиьный email или пароль.'));
+          throw new NotCorrectPasswordError('Неправлиьный email или пароль.');
         }
         bcrypt.compare(password, user.password)
           .then((matched) => {
             if (!matched) {
-              return Promise.reject(new NotAuthorizedError('Неправлиьный email или пароль.'));
+              throw new NotCorrectPasswordError('Неправлиьный email или пароль.');
             }
             const token = jwt.sign(
               { _id: user._id },
