@@ -14,7 +14,7 @@ const cardsSchema = new mongoose.Schema({
       validator: function(v) {
         return /https?:\/\/(www.)?\w*.\w*/g.test(v);
       },
-      message: props => `${props.value} не валидный.`
+      message: props => `${props.value} не валидный URL.`
     },
     required: [true, 'Введите URL адрес.' ],
   },
