@@ -1,7 +1,9 @@
-module.exports.handleError = async (req, res) => {
+const NotFoundError = require("../errors/NotFoundError");
+
+module.exports.handleError = async (req, res, next) => {
   try {
-    res.status(404).send('Страница не найдена, 404');
+    throw new NotFoundError('Страница не найдена.');
   } catch (err) {
-    res.status(500).send('Ошибка сервера.');
+    next(err);
   }
 };
