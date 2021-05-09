@@ -56,7 +56,10 @@ module.exports.createUser = async (req, res, next) => {
       .then((hash) => {
         return User.create({ ...req.body, password: hash });
       })
-      .then((createUser) => res.status(200).send(createUser))
+      .then((createUser) => {
+        createUser.password = '';
+        res.status(200).send(createUser);
+      });
   } catch (err) {
     if (err.code === UNIQUE_EMAIL_ERROR) {
       next(new NotUniqDataError('Пользователь с указаной почтой уже зарегистрирован.'));
