@@ -1,4 +1,5 @@
 const express = require('express');
+const { celebrate, Joi, Segments } = require('celebrate');
 const {
   getUsers, getUsersById, createUser, updateUserProfile, getUserInfo,
 } = require('../controllers/users');
@@ -14,8 +15,17 @@ userRoutes.get('/:userId', auth, getUsersById);
 
 userRoutes.post('/', auth, createUser);
 
-userRoutes.patch('/me', auth, updateUserProfile);
+userRoutes.patch('/me', auth, celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+  })
+}), updateUserProfile);
 
-userRoutes.patch('/me/avatar', auth, updateUserProfile);
+userRoutes.patch('/me/avatar', auth, celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().pattern(/(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+\.(\w\w)))/),
+  }),
+}), updateUserProfile);
 
 module.exports = userRoutes;
