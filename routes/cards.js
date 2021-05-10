@@ -13,7 +13,7 @@ cardsRoutes.post('/', auth, celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
     link: Joi.string().required().pattern(/(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+\.(\w\w)))/),
-  })
+  }),
 }), createCard);
 
 cardsRoutes.delete('/:cardId', auth, deleteCard);

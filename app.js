@@ -1,10 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
-const { errors }= require('celebrate')
+const { errors } = require('celebrate');
 const cookieParser = require('cookie-parser');
-const { routes } = require('./routes');
 const rateLimit = require('express-rate-limit');
+const { routes } = require('./routes');
 
 const {
   PORT = 3000,
@@ -14,7 +14,7 @@ const {
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-})
+});
 
 const app = express();
 
@@ -32,14 +32,13 @@ app.use(express.json());
 // });
 app.use(routes);
 
-
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   const { statusCode = 500, message } = err;
   res.status(statusCode).send({
     message: statusCode === 5
       ? 'На сервере произошла ошибка'
-      : message
-  });  
+      : message,
+  });
 });
 
 async function main() {

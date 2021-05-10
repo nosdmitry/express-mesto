@@ -1,5 +1,5 @@
 const express = require('express');
-const { celebrate, Joi, Segments } = require('celebrate');
+const { celebrate, Joi } = require('celebrate');
 const { createUser, login } = require('../controllers/users');
 const auth = require('../middlewares/auth');
 const cardsRoutes = require('./cards');
@@ -12,14 +12,14 @@ routes.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().email(),
     password: Joi.string().required().min(2),
-  })
+  }),
 }), login);
 
 routes.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().email(),
     password: Joi.string().required().min(2),
-  })
+  }),
 }), createUser);
 
 routes.use('/users', auth, userRoutes);

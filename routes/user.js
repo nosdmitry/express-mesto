@@ -1,5 +1,5 @@
 const express = require('express');
-const { celebrate, Joi, Segments } = require('celebrate');
+const { celebrate, Joi } = require('celebrate');
 const {
   getUsers, getUsersById, createUser, updateUserProfile, getUserInfo,
 } = require('../controllers/users');
@@ -19,7 +19,7 @@ userRoutes.patch('/me', auth, celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-  })
+  }),
 }), updateUserProfile);
 
 userRoutes.patch('/me/avatar', auth, celebrate({

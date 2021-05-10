@@ -24,7 +24,7 @@ module.exports.getUsers = async (req, res, next) => {
 module.exports.getUsersById = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.userId);
-    if(!user) {
+    if (!user) {
       throw new NotFoundError('Пользователь по указанному _id не найден.');
     }
     res.status(200).send(await user);
@@ -37,14 +37,14 @@ module.exports.getUserInfo = async (req, res, next) => {
   try {
     console.log(req.cookies.userToken);
     const user = await User.findById(req.user._id);
-    if(!user) {
+    if (!user) {
       throw new NotAuthorizedError('Доступ запрещён. Необходимо зарегестрироваться');
     }
     res.status(200).send(await user);
   } catch (err) {
     next(err);
   }
-}
+};
 
 module.exports.createUser = async (req, res, next) => {
   try {
@@ -53,9 +53,7 @@ module.exports.createUser = async (req, res, next) => {
       throw new NotCorrectDataError('Некорректный email!!!.');
     }
     await bcrypt.hash(password, SOLT_ROUNDS)
-      .then((hash) => {
-        return User.create({ ...req.body, password: hash });
-      })
+      .then((hash) => User.create({ ...req.body, password: hash }))
       .then((createUser) => {
         createUser.password = '';
         res.status(200).send(createUser);
@@ -101,9 +99,9 @@ module.exports.login = async (req, res, next) => {
           .catch(next);
       })
       .catch(next);
-    } catch (err) {
-      next(err);
-    }
+  } catch (err) {
+    next(err);
+  }
 };
 
 module.exports.updateUserProfile = async (req, res, next) => {
@@ -112,8 +110,8 @@ module.exports.updateUserProfile = async (req, res, next) => {
       _id: req.user._id,
     }, { ...req.body }, {
       new: true, runValidators: true,
-    })
-    if(!user) {
+    });
+    if (!user) {
       throw new NotCorrectDataError('Переданы некорректные данные при обновлении пользователя.');
     }
     res.status(200).send(await user);
