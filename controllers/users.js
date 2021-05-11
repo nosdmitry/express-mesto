@@ -50,7 +50,7 @@ module.exports.createUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     if (!validator.isEmail(email)) {
-      throw new NotCorrectDataError('Некорректный email!!!.');
+      throw new NotCorrectDataError('Некорректный email.');
     }
     await bcrypt.hash(password, SOLT_ROUNDS)
       .then((hash) => User.create({ ...req.body, password: hash }))
@@ -60,7 +60,7 @@ module.exports.createUser = async (req, res, next) => {
       });
   } catch (err) {
     if (err.code === UNIQUE_EMAIL_ERROR) {
-      next(new NotUniqDataError('Пользователь с указаной почтой уже зарегистрирован.'));
+      next(new NotUniqDataError('Пользователь с указаной почтой уже зарегистрирован'));
     }
     next(err);
   }

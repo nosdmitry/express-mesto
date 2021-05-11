@@ -19,7 +19,6 @@ const limiter = rateLimit({
 const app = express();
 
 app.use(helmet());
-app.use(errors());
 app.use(limiter);
 app.use(cookieParser());
 app.disable('x-powered-by');
@@ -30,15 +29,19 @@ app.use(express.json());
 //   };
 //   next();
 // });
+
 app.use(routes);
 
-app.use((err, req, res) => {
+app.use(errors());
+
+app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res.status(statusCode).send({
-    message: statusCode === 5
+    message: statusCode === 500
       ? 'На сервере произошла ошибка'
       : message,
   });
+  next();
 });
 
 async function main() {
@@ -50,6 +53,7 @@ async function main() {
       useUnifiedTopology: true,
     });
     console.log('DB connected');
+
     await app.listen(PORT, () => {
       console.log(`App is listening on port ${PORT}`);
     });

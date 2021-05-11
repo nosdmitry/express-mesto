@@ -13,7 +13,15 @@ userRoutes.get('/me', auth, getUserInfo);
 
 userRoutes.get('/:userId', auth, getUsersById);
 
-userRoutes.post('/', auth, createUser);
+userRoutes.post('/', auth, celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    description: Joi.string().min(2).max(30),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(2).required(),
+    avatar: Joi.string().pattern(/(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+\.(\w\w)))/),
+  }),
+}), createUser);
 
 userRoutes.patch('/me', auth, celebrate({
   body: Joi.object().keys({

@@ -16,7 +16,11 @@ cardsRoutes.post('/', auth, celebrate({
   }),
 }), createCard);
 
-cardsRoutes.delete('/:cardId', auth, deleteCard);
+cardsRoutes.delete('/:cardId', auth, celebrate({
+  body: Joi.object().keys({
+    cardId: Joi.string().max(5),
+  }),
+}), deleteCard);
 
 cardsRoutes.put('/:cardId/likes', auth, likeCard);
 
