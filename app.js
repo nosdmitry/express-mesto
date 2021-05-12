@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
-const { errors } = require('celebrate');
+const { isCelebrateError } = require('celebrate');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const { routes } = require('./routes');
@@ -23,16 +23,24 @@ app.use(limiter);
 app.use(cookieParser());
 app.disable('x-powered-by');
 app.use(express.json());
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '6084fd8c7ef7452941ce7275',
-//   };
-//   next();
-// });
 
 app.use(routes);
 
-app.use(errors());
+app.use((err, req, res, next) => {
+  if (!isCelebrateError(err)) {
+    return next(err);
+  }
+  const errorBody = err.details.get('body');
+  const errorParams = err.details.get('params');
+  if (errorBody) {
+    return res.status(400).send({ message: errorBody.message });
+  }
+  if (errorParams) {
+    return res.status(400).send({ message: errorParams.message });
+  }
+  next(err);
+  return null;
+});
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;

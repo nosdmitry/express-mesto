@@ -11,7 +11,11 @@ userRoutes.get('/', auth, getUsers);
 
 userRoutes.get('/me', auth, getUserInfo);
 
-userRoutes.get('/:userId', auth, getUsersById);
+userRoutes.get('/:userId', auth, celebrate({
+  params: Joi.object().keys({
+    userId: Joi.objectId(),
+  }),
+}), getUsersById);
 
 userRoutes.post('/', auth, celebrate({
   body: Joi.object().keys({
