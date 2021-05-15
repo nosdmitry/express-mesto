@@ -5,6 +5,7 @@ const { isCelebrateError } = require('celebrate');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const { routes } = require('./routes');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const {
   PORT = 3000,
@@ -24,7 +25,11 @@ app.use(cookieParser());
 app.disable('x-powered-by');
 app.use(express.json());
 
+app.use(requestLogger);
+
 app.use(routes);
+
+app.use(errorLogger);
 
 app.use((err, req, res, next) => {
   if (!isCelebrateError(err)) {
